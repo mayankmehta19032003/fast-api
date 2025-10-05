@@ -1,3 +1,4 @@
+# source /C/Users/Lenovo/OneDrive/Desktop/fastapi/fastapienv/Scripts/activate
 from fastapi import FastAPI
 import models
 from database import engine
@@ -9,3 +10,4 @@ models.Base.metadata.create_all(bind=engine)
 
 app.include_router(auth.router)
 app.include_router(todos.router)
+
