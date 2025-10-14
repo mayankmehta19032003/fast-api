@@ -47,3 +47,32 @@ def test_read_all_authenticated(test_todos):
     response = client.get("/")
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == [{"id": test_todos.id, "title": test_todos.title, "description": test_todos.description, "priority": test_todos.priority, "complete": test_todos.complete, "owner_id": test_todos.owner_id}]
+
+def test_read_one_authenticated(test_todos):
+    response = client.get(f"/todo/{test_todos.id}")
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json() == {"id": test_todos.id, "title": test_todos.title, "description": test_todos.description, "priority": test_todos.priority, "complete": test_todos.complete, "owner_id": test_todos.owner_id}
+
+def test_read_one_authenticated_not_found():
+    response = client.get("/todo/999")
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+    assert response.json() == {"detail": "Todo not found."}
+
+def test_create_todo_authenticated(test_todos):
+    response_data = {
+        "title": "New Todo",
+        "description": "This is a new todo",
+        "priority": 2,
+        "complete": False
+    }
+    response = client.post("/todo/", json=response_data)
+    assert response.status_code == status.HTTP_201_CREATED
+
+    db = TestingSessionLocal()
+    model = db.query(Todos).filter(Todos.id == 2).first()
+    assert model.title == response_data["title"]
+    assert model.description == response_data["description"]
+    assert model.priority == response_data["priority"]
+    assert model.complete == response_data["complete"]
+
+  
